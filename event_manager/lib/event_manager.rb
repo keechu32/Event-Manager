@@ -41,6 +41,36 @@ def clean_phone_numbers(phnumber)
   end  
 end
 
+def most_common_hours
+    contents = CSV.open('event_attendees.csv',headers: true, header_converters: :symbol)
+    register_hour = Array.new()
+    contents.each do |row|
+        reg_date = row[:regdate]
+        reg_hour = Time.strptime(reg_date, '%M/%d/%y %k:%M').strftime('%k')
+        register_hour = register_hour.push(reg_hour)
+    end
+    most_common_hour = register_hour.reduce(Hash.new(0)) do |hash, hour|
+        hash[hour] += 1
+        hash
+    end
+    puts "The most common hour is: #{most_common_hour.max_by{|_k, v| v}[0]}:00 "
+end
+
+def most_common_days
+    contents = CSV.open('event_attendees.csv',headers: true, header_converters: :symbol)
+    register_day = Array.new()
+    contents.each do |row|
+        reg_date = row[:regdate]
+        reg_day = Time.strptime(reg_date, '%M/%d/%y %k:%M').strftime('%^A')
+        register_day = register_day.push(reg_day)
+        end
+    most_common_day = register_day.reduce(Hash.new(0)) do |hash, day|
+        hash[day]+=1
+        hash
+    end
+    puts "The most common day is: #{most_common_day.max_by{|_k, v| v}[0]}"
+end
+
 puts 'Event Manager Initialized!'
 
 File.exist? 'event_attendees.csv'
@@ -51,18 +81,20 @@ template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
 contents.each do |row|
-    id = row[0]
-    name = row[:first_name]
+    #id = row[0]
+    #name = row[:first_name]
 
-    zipcode = clean_zipcode(row[:zipcode])
+    #zipcode = clean_zipcode(row[:zipcode])
 
-    phnumber = clean_phone_numbers(row[:homephone])
-    puts phnumber
+    #phnumber = clean_phone_numbers(row[:homephone])
 
-    legislators = legislators_by_zipcode(zipcode)
+    #egislators = legislators_by_zipcode(zipcode)
 
-    form_letter = erb_template.result(binding)
+    #form_letter = erb_template.result(binding)
 
-    save_thank_you_letter(id, form_letter)
+    #save_thank_you_letter(id, form_letter)
+    
 end
+most_common_days
+most_common_hours
 
